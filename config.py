@@ -78,4 +78,4 @@ max_len = 3000
 upper_token_limit = 3512
 max_search_results = 3
 max_chat_tokens = 512
-show_commands = True
+show_commands = False
