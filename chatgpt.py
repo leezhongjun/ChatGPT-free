@@ -105,6 +105,7 @@ class ChatGPT:
     self.messages = [{"role": "system", "content": config.system_prompt}]
     self.qn = ''
     self.history = []
+    self.hidden_history = []
     return None
   
   def toggle_commands(self, history):
