@@ -1,0 +1,5 @@
+beautifulsoup4
+duckduckgo_search
+openai
+python-dotenv
+gradio
