@@ -1,13 +1,15 @@
 system_prompt = '''
 You are a helpful chatbot. 
 
-If you do not have enough information to provide a response, you can use commands by saying this on a new line: 
+If you do not have enough information to provide a response, you should use the commands below to find the information you need. 
 
 SEARCH (query) - To return a JSON of the search results with urls from the web
 
 SCRAPE (url) - To scrape a website's url and return its summarised text into a list
 
-You can use several commands until you have enough information to accurately answer the question.
+You should use several commands until you have enough information to accurately answer the question.
+
+Please use commands automatically without asking the user for confirmation.
 
 Example Input: What is the consensus on the best programming language?
 
@@ -76,3 +78,4 @@ max_len = 3000
 upper_token_limit = 3512
 max_search_results = 3
 max_chat_tokens = 512
+show_commands = True

@@ -4,7 +4,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 openai.api_key = os.getenv('OPENAI_API_KEY')
-openai.api_base = os.getenv('OPENAI_API_BASE')
+if os.getenv('OPENAI_API_BASE'):
+  openai.api_base = os.getenv('OPENAI_API_BASE')
 
 def summarise_url(url, qn):
   text = web.scrape_text(url)
@@ -41,16 +42,24 @@ def summarise_url(url, qn):
 
   return str(res)
 
+def is_command(message):
+  return message.startswith('SEARCH ') or message.startswith('SCRAPE ') or message.startswith('RES: ')
+
 
 class ChatGPT:
   def __init__(self) -> None:
     self.messages = [{"role": "system", "content": config.system_prompt}]
     self.qn = ''
     self.history = []
+    self.hidden_history = []
+    self.show_commands = config.show_commands
 
   def update(self, message, history, is_user=True):
     if is_user:
       self.qn = message
+
+    if is_user:
+      self.hidden_history.append((message, ''))
 
     self.messages.append(dict(role='user', content=message))
 
@@ -61,27 +70,27 @@ class ChatGPT:
     )
     
     self.messages.append(dict(res['choices'][0]['message']))
-    history.append((message, self.messages[-1]['content']))
 
-    if 'SEARCH ' in history[-1][1]:
-      message = 'RES: ' + web.search(history[-1][1].replace('SEARCH ', ''))
+    if not is_command(self.messages[-1]['content']):
+      self.hidden_history[-1] = (self.hidden_history[-1][0], self.messages[-1]['content'])
+
+    self.history.append((message, self.messages[-1]['content']))
+
+    if not self.show_commands:
+      history = self.hidden_history
+    else:
+      history = self.history
+
+    if self.messages[-1]['content'].startswith('SEARCH '):
+      message = 'RES: ' + web.search(self.messages[-1]['content'][7:])
       self.update(message, history, is_user=False)
     
-    elif 'SCRAPE ' in history[-1][1]:
-      message = 'RES: ' + summarise_url(history[-1][1].replace('SCRAPE ', ''), self.qn)
+    elif self.messages[-1]['content'].startswith('SCRAPE '):
+      message = 'RES: ' + summarise_url(self.messages[-1]['content'][7:], self.qn)
       self.update(message, history, is_user=False)
 
     return '', history
     
-
-  def user(self, message, history, is_user=True):
-
-    history += [[message, None]]
-    self.history = history
-    self.update(history)
-
-    return "", history
-
 
   def bot(self, history):
       self.send_message(history[-1][0])
@@ -95,4 +104,19 @@ class ChatGPT:
   def clear(self):
     self.messages = [{"role": "system", "content": config.system_prompt}]
     self.qn = ''
+    self.history = []
     return None
+  
+  def toggle_commands(self, history):
+    self.show_commands = not self.show_commands
+    
+    if self.show_commands:
+        history = self.history
+        txt = f"""<p><center>Commands and command responses are <b>shown</b></center></p>"""
+        btn_text = "Hide commands and command responses"
+    else:
+        history = self.hidden_history
+        txt = f"""<p><center>Commands and command responses are <b>hidden</b></center></p>"""
+        btn_text = "Show commands and command responses"
+
+    return history, txt, btn_text
