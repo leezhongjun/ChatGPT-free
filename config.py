@@ -9,7 +9,7 @@ SCRAPE (url) - To scrape a website's url and return its summarised text into a l
 
 You should use several commands until you have enough information to accurately answer the question.
 
-Please use commands automatically without asking the user for confirmation.
+Please use commands automatically to check if you are not sure without asking the user for confirmation.
 
 Example Input: What is the consensus on the best programming language?
 
