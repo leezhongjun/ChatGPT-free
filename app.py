@@ -11,6 +11,7 @@ def update(name):
 with block:
     gr.Markdown("""<h1><center>🤖 ChatGPT-free 🐍</center></h1>
                    <p><center>ChatGPT-free has web access and uses the gpt-3.5-turbo model</center></p>
+                   <p><center><b>Press Clear before starting a new conversation</b></center></p>
                    <p><center>View <a href="https://github.com/leezhongjun/ChatGPT-free">source on GitHub</a></center></p>""") 
     if chatgpt_obj.show_commands:
         show_commands_txt = gr.Markdown(f"""<p><center>Commands and command responses are <b>shown</b></center></p>""")
